@@ -1,7 +1,7 @@
 package com.smart.smartauth.smartauth.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,31 +15,33 @@ import com.smart.smartauth.smartauth.requestDTOs.AuthValidateRequest;
 import com.smart.smartauth.smartauth.responseDTOs.AuthSignInResponse;
 import com.smart.smartauth.smartauth.services.AuthService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
-	private AuthService authService;
+    private AuthService authService;
 
-	@PutMapping("/register")
-	public AuthSignInResponse register(@RequestBody AuthRegisterRequest authRegisterRequest) {
+    @PutMapping("/register")
+    public ResponseEntity<AuthSignInResponse> register(@Valid @RequestBody AuthRegisterRequest authRegisterRequest) {
 
-		return authService.register(authRegisterRequest);
+        AuthSignInResponse authSignInResponse = authService.register(authRegisterRequest);
+        return ResponseEntity.ok(authSignInResponse);
 
-	}
+    }
 
-	@PostMapping("/signin")
-	public AuthSignInResponse signIn(@RequestBody AuthSignInRequest authSignInRequest) {
+    @PostMapping("/signin")
+    public ResponseEntity<AuthSignInResponse> signIn(@RequestBody AuthSignInRequest authSignInRequest) {
+        AuthSignInResponse authSignInResponse = authService.signIn(authSignInRequest);
+        return ResponseEntity.ok(authSignInResponse);
 
-		return authService.signIn(authSignInRequest);
+    }
 
-	}
-	
-	@PostMapping("/validate")
-	public AuthSignInResponse validate(@RequestBody AuthValidateRequest AuthValidateRequest) {
-		return authService.validate(AuthValidateRequest);
-	}
+    @PostMapping("/validate")
+    public ResponseEntity<AuthSignInResponse> validate(@RequestBody AuthValidateRequest AuthValidateRequest) {
+        AuthSignInResponse authSignInResponse = authService.validate(AuthValidateRequest);
+        return ResponseEntity.ok(authSignInResponse);
+    }
 }
-
-

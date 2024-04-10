@@ -1,13 +1,14 @@
 package com.smart.smartauth.smartauth.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.smart.smartauth.smartauth.entities.PasswordMapping;
+import com.smart.smartauth.smartauth.entities.RoleUserMapping;
 import com.smart.smartauth.smartauth.entities.User;
 import com.smart.smartauth.smartauth.repositories.PasswordMappingRepository;
+import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
 import com.smart.smartauth.smartauth.requestDTOs.AuthRegisterRequest;
 import com.smart.smartauth.smartauth.requestDTOs.AuthSignInRequest;
@@ -15,7 +16,10 @@ import com.smart.smartauth.smartauth.requestDTOs.AuthValidateRequest;
 import com.smart.smartauth.smartauth.responseDTOs.AuthSignInResponse;
 import com.smart.smartauth.smartauth.security.JwtService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
+@Transactional
 public class AuthService {
 
     @Autowired
@@ -25,15 +29,21 @@ public class AuthService {
     private PasswordMappingRepository passwordMappingRepository;
 
     @Autowired
+    private RoleUserMappingRepository roleUserMappingRepository;
+
+    @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public AuthSignInResponse register(AuthRegisterRequest authRegisterRequest) {
 
         String username = authRegisterRequest.getUser().getUsername();
-        String password = authRegisterRequest.getPassword();
+        String password = passwordEncoder.encode(authRegisterRequest.getPassword());
 
-        if (userRepository.findByUsername(username).isPresent())
-            return new AuthSignInResponse(false, "Username already exists", "", null);
+        if (!userRepository.findByUsername(username).isEmpty())
+            throw new IllegalArgumentException("Username already exists");
 
         PasswordMapping passwordMapping = new PasswordMapping(username, password);
         passwordMappingRepository.save(passwordMapping);
@@ -41,40 +51,39 @@ public class AuthService {
         User savedUser = userRepository.save(authRegisterRequest.getUser());
         String jwtToken = jwtService.generateToken(username);
 
-        return new AuthSignInResponse(true, "Successfully registered", jwtToken, savedUser);
+        RoleUserMapping roleUserMapping = new RoleUserMapping(savedUser.getId(), "USER");
+        roleUserMappingRepository.save(roleUserMapping);
+
+        return new AuthSignInResponse(savedUser, jwtToken);
 
     }
 
     public AuthSignInResponse signIn(AuthSignInRequest authSignInRequest) {
 
         String username = authSignInRequest.getUsername();
-        String password = authSignInRequest.getPassword();
+        String password = passwordEncoder.encode(authSignInRequest.getPassword());
 
-        Optional<PasswordMapping> passwordMapping = passwordMappingRepository.findByUsername(username);
+        PasswordMapping passwordMapping = passwordMappingRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User doesn't exist"));
 
-        if (!passwordMapping.isPresent() || !password.equals(passwordMapping.get().getPassword())) {
-            return new AuthSignInResponse(false, "Incorrect username or password", "", null);
+        if (!password.equals(passwordMapping.getPassword())) {
+            throw new EntityNotFoundException("Password is incorrect");
         }
 
         String jwtToken = jwtService.generateToken(username);
         User user = userRepository.findByUsername(username).get();
 
-        return new AuthSignInResponse(true, "Successfully signed in", jwtToken, user);
+        return new AuthSignInResponse(user, jwtToken);
 
     }
 
     public AuthSignInResponse validate(AuthValidateRequest authValidateRequest) {
         String jwtToken = authValidateRequest.getJwtToken();
+        String username = jwtService.extractUsername(jwtToken);
 
-        try {
-            String username = jwtService.extractUsername(jwtToken);
-            User user = userRepository.findByUsername(username).get();
-            return new AuthSignInResponse(true, "Validated successful", jwtToken, user);
+        User user = userRepository.findByUsername(username) .orElseThrow(() -> new EntityNotFoundException("User doesn't exist"));
 
-        } catch (Exception e) {
-
-            return new AuthSignInResponse(false, "Validation failed", "", null);
-        }
+        return new AuthSignInResponse(user, jwtToken);
 
     }
 }

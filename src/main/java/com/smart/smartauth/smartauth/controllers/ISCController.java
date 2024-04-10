@@ -3,6 +3,7 @@ package com.smart.smartauth.smartauth.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +20,11 @@ public class ISCController {
     @Autowired
     private ISCService iscService;
 
-    @PostMapping("/fetch")
-    public List<User> fetchUsers(@RequestBody List<Integer>userids) {
+    @PostMapping("/fetch/all")
+    public ResponseEntity<List<User>> fetchUsers(@RequestBody List<Integer> userids) {
 
-        return iscService.fetchAllUsers(userids);
-
+        List<User> users = iscService.fetchAllUsers(userids);
+        return ResponseEntity.ok(users);
     }
 
 }

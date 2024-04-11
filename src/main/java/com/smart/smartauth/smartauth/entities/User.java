@@ -37,7 +37,10 @@ public class User {
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
     private String username;
 
+    @NotBlank(message = "Mobile No is required")
+    @Size(min = 10, max = 10, message = "Mobile No must be of 10 digits")
     private String mobileNo;
+    
     private String profilePic;
 
 }

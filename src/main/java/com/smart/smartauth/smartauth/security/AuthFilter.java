@@ -39,8 +39,11 @@ public class AuthFilter extends OncePerRequestFilter {
     @Value("${ADMIN_KEY}")
     private String ADMIN_KEY;
 
-    private Object principle;
-    private String role;
+    private void saveToSecurityContext(Object principal, String role) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(principal, null,
+                Collections.singleton(new SimpleGrantedAuthority(role)));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
 
     private void validateJwt(String authToken) {
         String jwtToken = authToken.substring(7);
@@ -50,21 +53,19 @@ public class AuthFilter extends OncePerRequestFilter {
                 .orElseThrow(() -> new EntityNotFoundException("User doesn't exist"));
         String role = roleUserMappingRepository.findByUserid(user.getId()).get().getRole();
 
-        this.principle = user;
-        this.role = role;
+        saveToSecurityContext(user, role);
 
     }
 
-    private void validateAdminKey(String adminKey){
+    private void validateAdminKey(String adminKey) {
         if (ADMIN_KEY.equals(adminKey)) {
-            this.principle = "ADMIN";
-            this.role = "ADMIN";
+            saveToSecurityContext("ADMIN", "ADMIN");
         }
     }
+
     private void validateApiKey(String apiKey) {
         if (API_KEY.equals(apiKey)) {
-            this.principle = "SERVICE";
-            this.role = "SERVICE";
+            saveToSecurityContext("SERVICE", "SERVICE");
         }
     }
 
@@ -94,12 +95,6 @@ public class AuthFilter extends OncePerRequestFilter {
         if (pathMatcher.match("/isc/**", requestURI)) {
             String apiKey = request.getHeader("Api-Key");
             validateApiKey(apiKey);
-        }
-
-        if (principle != null && role != null) {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(principle, null,
-                    Collections.singleton(new SimpleGrantedAuthority(role)));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

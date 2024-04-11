@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smart.smartauth.smartauth.entities.User;
+import com.smart.smartauth.smartauth.repositories.PasswordMappingRepository;
+import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
 import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -18,31 +18,41 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordMappingRepository passwordMappingRepository;
+
+    @Autowired
+    private RoleUserMappingRepository roleUserMappingRepository;
+
     public User updateUser(User user) {
 
-        User existedUser = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (user.getEmail() != null)
-            existedUser.setEmail(user.getEmail());
+            currentUser.setEmail(user.getEmail());
         if (user.getName() != null)
-            existedUser.setName(user.getName());
+            currentUser.setName(user.getName());
 
         if (user.getMobileNo() != null)
-            existedUser.setMobileNo(user.getMobileNo());
+            currentUser.setMobileNo(user.getMobileNo());
 
         if (user.getProfilePic() != null)
-            existedUser.setProfilePic(user.getProfilePic());
+            currentUser.setProfilePic(user.getProfilePic());
 
-        userRepository.save(existedUser);
-        return existedUser;
+        userRepository.save(currentUser);
+        return currentUser;
 
     }
 
-    public TaskResponse<Integer> deleteUser(){
-           User user  =  (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-           userRepository.deleteById(user.getId());
-           return new TaskResponse<>("User is deleted", user.getId());
+    public TaskResponse<Integer> deleteUser() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userid = user.getId();
+
+        userRepository.deleteById(userid);
+        passwordMappingRepository.deleteByUserid(userid);
+        roleUserMappingRepository.deleteByUserid(userid);
+        
+        return new TaskResponse<>("User is deleted", user.getId());
     }
 
 }

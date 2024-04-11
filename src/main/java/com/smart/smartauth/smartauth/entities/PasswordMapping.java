@@ -22,11 +22,11 @@ public class PasswordMapping {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String username;
+    private Integer userid;
     private String password;
 
-    public PasswordMapping(String username, String password) {
-        this.username = username;
+    public PasswordMapping(Integer userid, String password) {
+        this.userid = userid;
         this.password = password;
     }
 

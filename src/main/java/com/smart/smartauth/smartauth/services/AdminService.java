@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smart.smartauth.smartauth.entities.RoleUserMapping;
+import com.smart.smartauth.smartauth.repositories.PasswordMappingRepository;
 import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
 import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
@@ -20,10 +21,15 @@ public class AdminService {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordMappingRepository passwordMappingRepository;
+
+    @Autowired
     private RoleUserMappingRepository roleUserMappingRepository;
 
     public TaskResponse<Object> deleteAllUsers(List<Integer> userids) {
         userRepository.deleteAllById(userids);
+        passwordMappingRepository.deleteAllByUserids(userids);
+        roleUserMappingRepository.deleteAllByUserids(userids);
         return new TaskResponse<>("All users have been deleted", null);
         
     }

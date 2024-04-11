@@ -45,11 +45,11 @@ public class AuthService {
         if (!userRepository.findByUsername(username).isEmpty())
             throw new IllegalArgumentException("Username already exists");
 
-        PasswordMapping passwordMapping = new PasswordMapping(username, password);
-        passwordMappingRepository.save(passwordMapping);
-
         User savedUser = userRepository.save(authRegisterRequest.getUser());
         String jwtToken = jwtService.generateToken(username);
+
+        PasswordMapping passwordMapping = new PasswordMapping(savedUser.getId(), password);
+        passwordMappingRepository.save(passwordMapping);
 
         RoleUserMapping roleUserMapping = new RoleUserMapping(savedUser.getId(), "USER");
         roleUserMappingRepository.save(roleUserMapping);
@@ -61,17 +61,17 @@ public class AuthService {
     public AuthSignInResponse signIn(AuthSignInRequest authSignInRequest) {
 
         String username = authSignInRequest.getUsername();
-        String password = passwordEncoder.encode(authSignInRequest.getPassword());
+        String password = authSignInRequest.getPassword();
 
-        PasswordMapping passwordMapping = passwordMappingRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User doesn't exist"));
+        PasswordMapping passwordMapping = passwordMappingRepository.findByUserid(user.getId()).get();
 
-        if (!password.equals(passwordMapping.getPassword())) {
+        if (!passwordEncoder.matches(password, passwordMapping.getPassword())) {
             throw new EntityNotFoundException("Password is incorrect");
         }
 
         String jwtToken = jwtService.generateToken(username);
-        User user = userRepository.findByUsername(username).get();
 
         return new AuthSignInResponse(user, jwtToken);
 

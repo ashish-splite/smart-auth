@@ -86,4 +86,9 @@ public class AuthService {
         return new AuthSignInResponse(user, jwtToken);
 
     }
+
+    public void isUsernameExist(String username) {
+        if (userRepository.findByUsername(username).isEmpty())
+            throw new IllegalArgumentException("Username doesn't exist");
+    }
 }

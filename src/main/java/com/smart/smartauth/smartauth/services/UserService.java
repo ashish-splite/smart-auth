@@ -9,7 +9,6 @@ import com.smart.smartauth.smartauth.entities.User;
 import com.smart.smartauth.smartauth.repositories.PasswordMappingRepository;
 import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
-import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
 
 @Service
 @Transactional
@@ -44,7 +43,7 @@ public class UserService {
 
     }
 
-    public TaskResponse<Integer> deleteUser() {
+    public void deleteUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userid = user.getId();
 
@@ -52,7 +51,6 @@ public class UserService {
         passwordMappingRepository.deleteByUserid(userid);
         roleUserMappingRepository.deleteByUserid(userid);
         
-        return new TaskResponse<>("User is deleted", user.getId());
     }
 
 }

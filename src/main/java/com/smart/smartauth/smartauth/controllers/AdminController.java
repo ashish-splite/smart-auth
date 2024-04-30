@@ -11,27 +11,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
+import com.smart.smartauth.smartauth.annotations.AdminKeyRequired;
+import com.smart.smartauth.smartauth.annotations.BearerTokenRequired;
 import com.smart.smartauth.smartauth.services.AdminService;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @CrossOrigin(origins = "*")
+@BearerTokenRequired
+@AdminKeyRequired
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
     private AdminService adminService;
 
     @DeleteMapping("/delete/all")
-    public ResponseEntity<TaskResponse<Object>> deleteUsers(@RequestBody List<Integer> userids) {
-        TaskResponse<Object> taskResponse = adminService.deleteAllUsers(userids);
-        return ResponseEntity.ok(taskResponse);
+    public ResponseEntity<Void> deleteUsers(@RequestBody List<Integer> userids) {
+         adminService.deleteAllUsers(userids);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/update/role/{userid}/{role}")
-    public ResponseEntity<TaskResponse<Object>> updateRole(@PathVariable Integer userid, @PathVariable String role) {
-        TaskResponse<Object> taskResponse = adminService.updateRole(userid, role);
-        return ResponseEntity.ok(taskResponse);
+    public ResponseEntity<Void> updateRole(@PathVariable Integer userid, @PathVariable String role) {
+        adminService.updateRole(userid, role);
+        return ResponseEntity.ok().build();
     }
 
 }

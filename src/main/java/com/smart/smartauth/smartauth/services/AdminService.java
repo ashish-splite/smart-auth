@@ -9,8 +9,6 @@ import com.smart.smartauth.smartauth.entities.RoleUserMapping;
 import com.smart.smartauth.smartauth.repositories.PasswordMappingRepository;
 import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
-import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
-
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -26,20 +24,17 @@ public class AdminService {
     @Autowired
     private RoleUserMappingRepository roleUserMappingRepository;
 
-    public TaskResponse<Object> deleteAllUsers(List<Integer> userids) {
+    public void deleteAllUsers(List<Integer> userids) {
         userRepository.deleteAllById(userids);
         passwordMappingRepository.deleteAllByUserids(userids);
         roleUserMappingRepository.deleteAllByUserids(userids);
-        return new TaskResponse<>("All users have been deleted", null);
-        
     }
 
-    public TaskResponse<Object> updateRole(Integer userid, String role) {
+    public void updateRole(Integer userid, String role) {
 
         RoleUserMapping roleUserMapping = roleUserMappingRepository.findByUserid(userid)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
         roleUserMapping.setRole(role);
         roleUserMappingRepository.save(roleUserMapping);
-        return new TaskResponse<>("Role of user " + userid + " is updated to " + role, null);
     }
 }

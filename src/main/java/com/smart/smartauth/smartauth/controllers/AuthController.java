@@ -16,6 +16,9 @@ import com.smart.smartauth.smartauth.responseDTOs.AuthSignInResponse;
 import com.smart.smartauth.smartauth.services.AuthService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -44,4 +47,11 @@ public class AuthController {
         AuthSignInResponse authSignInResponse = authService.validate(AuthValidateRequest);
         return ResponseEntity.ok(authSignInResponse);
     }
+
+    @GetMapping("/exists/{username}")
+    public ResponseEntity<Void> isUsernameExist(@PathVariable String username) {
+       authService.isUsernameExist(username);
+       return ResponseEntity.ok().build();
+    }
+    
 }

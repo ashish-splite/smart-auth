@@ -1,5 +1,6 @@
 package com.smart.smartauth.smartauth.entities;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
+@Hidden
 public class PasswordMapping {
 
     @Id

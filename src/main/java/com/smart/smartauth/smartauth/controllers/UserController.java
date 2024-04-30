@@ -9,29 +9,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smart.smartauth.smartauth.annotations.BearerTokenRequired;
 import com.smart.smartauth.smartauth.entities.User;
-import com.smart.smartauth.smartauth.responseDTOs.TaskResponse;
 import com.smart.smartauth.smartauth.services.UserService;
-
-import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin(origins = "*")
+@BearerTokenRequired
 @RequestMapping("/user")
 public class UserController {
   @Autowired
   private UserService userService;
 
   @PatchMapping("/update")
-  public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
+  public ResponseEntity<User> updateUser( @RequestBody User user) {
     User updatedUser = userService.updateUser(user);
     return ResponseEntity.ok(updatedUser);
   }
 
   @DeleteMapping("/delete")
-  public ResponseEntity<TaskResponse<Integer>> deleteUser(){
-    TaskResponse<Integer> taskResponse = userService.deleteUser();
-    return ResponseEntity.ok(taskResponse);
+  public ResponseEntity<Void> deleteUser(){
+    userService.deleteUser();
+    return ResponseEntity.ok().build();
   }
   
 }

@@ -1,7 +1,5 @@
 package com.smart.smartauth.smartauth.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smart.smartauth.smartauth.annotations.AdminKeyRequired;
 import com.smart.smartauth.smartauth.annotations.BearerTokenRequired;
+import com.smart.smartauth.smartauth.requestDTOs.UserIds;
 import com.smart.smartauth.smartauth.services.AdminService;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -26,8 +25,8 @@ public class AdminController {
     private AdminService adminService;
 
     @DeleteMapping("/delete/all")
-    public ResponseEntity<Void> deleteUsers(@RequestBody List<Integer> userids) {
-         adminService.deleteAllUsers(userids);
+    public ResponseEntity<Void> deleteUsers(@RequestBody UserIds userIds) {
+         adminService.deleteAllUsers(userIds);
         return ResponseEntity.ok().build();
     }
 

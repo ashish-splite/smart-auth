@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smart.smartauth.smartauth.annotations.ApiKeyRequired;
 import com.smart.smartauth.smartauth.entities.User;
+import com.smart.smartauth.smartauth.requestDTOs.UserIds;
 import com.smart.smartauth.smartauth.services.ISCService;
 
 @RestController
@@ -23,9 +24,9 @@ public class ISCController {
     private ISCService iscService;
 
     @PostMapping("/fetch/all")
-    public ResponseEntity<List<User>> fetchUsers(@RequestBody List<Integer> userids) {
+    public ResponseEntity<List<User>> fetchUsers(@RequestBody UserIds userIds) {
 
-        List<User> users = iscService.fetchAllUsers(userids);
+        List<User> users = iscService.fetchAllUsers(userIds);
         return ResponseEntity.ok(users);
     }
 

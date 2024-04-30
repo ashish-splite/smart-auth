@@ -2,7 +2,6 @@ package com.smart.smartauth.smartauth.requestDTOs;
 
 import com.smart.smartauth.smartauth.entities.User;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -17,7 +16,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Hidden
 public class AuthRegisterRequest {
 
     @Valid

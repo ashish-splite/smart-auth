@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.smart.smartauth.smartauth.entities.User;
 import com.smart.smartauth.smartauth.repositories.UserRepository;
+import com.smart.smartauth.smartauth.requestDTOs.UserIds;
 
 @Service
 @Transactional
@@ -15,8 +16,8 @@ public class ISCService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> fetchAllUsers(List<Integer> userids) {
-        return (List<User>) userRepository.findAllById(userids);
+    public List<User> fetchAllUsers(UserIds userIds) {
+        return (List<User>) userRepository.findAllById(userIds.getUserIds());
     }
 
 }

@@ -81,9 +81,10 @@ public class AuthService {
         String jwtToken = authValidateRequest.getJwtToken();
         String username = jwtService.extractUsername(jwtToken);
 
+        String newJwtToken = jwtService.generateToken(username);
         User user = userRepository.findByUsername(username) .orElseThrow(() -> new EntityNotFoundException("User doesn't exist"));
 
-        return new AuthSignInResponse(user, jwtToken);
+        return new AuthSignInResponse(user, newJwtToken);
 
     }
 

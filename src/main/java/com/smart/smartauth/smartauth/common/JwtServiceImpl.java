@@ -21,7 +21,8 @@ public class JwtServiceImpl implements JwtService {
     @Value("${JWT_SECRET}")
     private String SECRET;
 
-    private final long EXPIRATION_TIME = 864_000_000; // 10 days
+    @Value("${JWT_EXPIRATION_TIME}")
+    private Long EXPIRATION_TIME;
 
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()

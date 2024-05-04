@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService{
         PasswordMapping passwordMapping = passwordMappingRepository.findByUserid(user.getId()).get();
 
         if (!passwordEncoder.matches(password, passwordMapping.getPassword())) {
-            throw new EntityNotFoundException("Password is incorrect");
+            throw new IllegalArgumentException("Password is incorrect");
         }
 
         String jwtToken = jwtService.generateToken(username);
@@ -96,6 +96,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void isUsernameExist(String username) {
         if (userRepository.findByUsername(username).isEmpty())
-            throw new IllegalArgumentException("Username doesn't exist");
+            throw new EntityNotFoundException("Username doesn't exist");
     }
 }

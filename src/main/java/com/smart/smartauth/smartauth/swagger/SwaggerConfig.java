@@ -1,4 +1,4 @@
-package com.smart.smartauth.smartauth.security;
+package com.smart.smartauth.smartauth.swagger;
 
 import java.lang.annotation.Annotation;
 

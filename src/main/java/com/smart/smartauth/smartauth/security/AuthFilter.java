@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.smart.smartauth.smartauth.common.JwtService;
 import com.smart.smartauth.smartauth.entities.User;
 import com.smart.smartauth.smartauth.repositories.RoleUserMappingRepository;
 import com.smart.smartauth.smartauth.repositories.UserRepository;

@@ -1,4 +1,4 @@
-package com.smart.smartauth.smartauth.security;
+package com.smart.smartauth.smartauth.common;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class JwtServiceImpl implements JwtService {
 
     @Value("${JWT_SECRET}")
     private String SECRET;
@@ -51,24 +51,28 @@ public class JwtService {
                 .getBody();
     }
 
+    @Override
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName);
     }
 
+    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    @Override
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
     
+    @Override
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-
+    @Override
     public Boolean validateToken(String token) {
         try {
             extractUsername(token);
